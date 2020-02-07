@@ -1,6 +1,10 @@
 package com.example.loops.server;
 
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import java.io.*;
 import java.text.*;
 import java.util.*;
@@ -8,39 +12,44 @@ import java.net.*;
 
 // Server class
 public class server {
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static void main(String[] args) throws IOException
     {
         // server is listening on port 5056
         ServerSocket ss = new ServerSocket(5056);
 
+        ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+
         // running infinite loop for getting
         // client request
         while (true)
         {
-            Socket s = null;
+
 
             try
             {
                 // socket object to receive incoming client requests
-                s = ss.accept();
+                Socket client = ss.accept();
 
-                System.out.println("A new client is connected : " + s);
+                System.out.println("A new client is connected : " + client);
+                ClientHandler clientHandler = new ClientHandler(client);
+                clientHandlers.add(clientHandler);
 
                 // obtaining input and out streams
-                DataInputStream dis = new DataInputStream(s.getInputStream());
-                DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 
                 System.out.println("Assigning new thread for this client");
 
                 // create a new thread object
-                //Thread t = new ClientHandler(s, dis, dos);
+                Thread t = clientHandler;
 
                 // Invoking the start() method
-                //t.start();
+                t.start();
 
             }
             catch (Exception e){
-                s.close();
                 e.printStackTrace();
             }
         }
