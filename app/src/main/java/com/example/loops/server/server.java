@@ -1,12 +1,13 @@
 package com.example.loops.server;
 
+
 import java.io.*;
 import java.text.*;
 import java.util.*;
 import java.net.*;
 
 // Server class
-public class Server {
+public class server {
     public static void main(String[] args) throws IOException
     {
         // server is listening on port 5056
