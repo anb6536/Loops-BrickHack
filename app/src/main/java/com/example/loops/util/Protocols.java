@@ -5,4 +5,5 @@ public interface Protocols {
     /**
      * Defining the protocols for the server
      */
+
 }
