@@ -6,28 +6,32 @@ import androidx.annotation.RequiresApi;
 
 import com.example.loops.util.Duplexer;
 import com.example.loops.util.Protocols;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
+import java.util.ArrayList;
+
 
 class ClientHandler extends Thread implements Protocols
 {
     private Duplexer server;
 
+    private ArrayList<ClientHandler> handlers;
+
+    private String uid;
+
+    private int flag;   //0 for offline, 1 for online
+
 
     // Constructor
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public ClientHandler(Socket s) throws IOException
+    public ClientHandler(Socket s, ArrayList<ClientHandler> handlers) throws IOException
 
     {
         Duplexer server = new Duplexer(s);
         this.server = server;
+        this.handlers = handlers;
+        this.flag = 1;
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -40,21 +44,33 @@ class ClientHandler extends Thread implements Protocols
             received = this.server.read();
             if (received.equals(CONNECT)){
                 String[] token = received.split(" ");
-                //pass the token[1] to the db handler so that it checks adds it into the array list.
                 String user = token[1];
+                this.uid = user;
                 int number = user.hashCode();
                 server.send(AUTHENTICATED+" "+Integer.toString(number)+" "+user);
             }
             else if(received.equals(SEND)){
+                String msg = "";
                 String[] token = received.split(" ");
                 String usr = token[1];
-                //find the user in the database and send the message to him.
-                //also check if the loop is complete or not
-                //send the recieve protocol to the client.
+                for (int i = 2; i<token.length-1; i++){
+                    msg += token[i];
+                }
+                for (ClientHandler handler : this.handlers){
+                    if (handler.uid.equals(usr)){
+                        this.server.send(RECEIVE+ " "+ msg);
+                    }
+                }
 
             }
             else if(received.equals(DISCONNECT)){
-                //change the status in the database.
+                String[] token = received.split(" ");
+                String usr = token[1];
+                for (ClientHandler handler: this.handlers){
+                    if (handler.uid.equals(usr)) {
+                        handler.flag = 0;
+                    }
+                }
             }
         }
     }

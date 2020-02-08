@@ -35,7 +35,7 @@ public class server {
                 Socket client = ss.accept();
 
                 System.out.println("A new client is connected : " + client);
-                ClientHandler clientHandler = new ClientHandler(client);
+                ClientHandler clientHandler = new ClientHandler(client, clientHandlers);
                 clientHandlers.add(clientHandler);
 
                 // obtaining input and out streams
