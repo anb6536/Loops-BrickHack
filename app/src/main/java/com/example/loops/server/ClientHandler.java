@@ -58,7 +58,7 @@ class ClientHandler extends Thread implements Protocols
                 }
                 for (ClientHandler handler : this.handlers){
                     if (handler.uid.equals(usr)){
-                        this.server.send(RECEIVE+ " "+ msg);
+                        handler.server.send(RECEIVE+ " "+ msg);
                     }
                 }
 
