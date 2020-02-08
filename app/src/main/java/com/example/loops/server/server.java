@@ -1,43 +1,60 @@
 package com.example.loops.server;
 
+import android.os.Build;
 
+import com.example.loops.util.Duplexer;
+import com.example.loops.util.Protocols;
 import java.io.*;
-import java.text.*;
-import java.util.*;
 import java.net.*;
+import java.util.HashMap;
+
+import androidx.annotation.RequiresApi;
 
 // Server class
-public class server {
+public class server implements Protocols {
+    public static HashMap<Integer,ClientHandler> clients;
+    public server(){
+        this.clients=new HashMap<>();
+    }
+    public int generateID(String username){
+        return username.hashCode();
+    }
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static void main(String[] args) throws IOException
     {
         // server is listening on port 5056
         ServerSocket ss = new ServerSocket(5056);
-
         // running infinite loop for getting
         // client request
+        Game game=new Game();
+        game.run();
         while (true)
         {
             Socket s = null;
-
             try
             {
                 // socket object to receive incoming client requests
                 s = ss.accept();
 
                 System.out.println("A new client is connected : " + s);
-
-                // obtaining input and out streams
-                DataInputStream dis = new DataInputStream(s.getInputStream());
-                DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-
-                System.out.println("Assigning new thread for this client");
-
-                // create a new thread object
-                //Thread t = new ClientHandler(s, dis, dos);
-
+                Duplexer duplexer= new Duplexer(s);
+                String[] input=duplexer.read().split(" ");
+                String username="";
+                if(input[0].equals(CONNECT)){
+                    username= input[1];
+                }
+                ClientHandler client = new ClientHandler(duplexer);
+                int key=username.hashCode();
+                Thread t = client;
                 // Invoking the start() method
-                //t.start();
-
+                t.start();
+                if(!clients.containsKey(key)){
+                    clients.put(key,client);
+                    game.addClient(client);
+                }
+                System.out.println("Assigning new thread for this client");
+                // create a new thread object
+                // adding the client in the loop so that the new player can be updated
             }
             catch (Exception e){
                 s.close();

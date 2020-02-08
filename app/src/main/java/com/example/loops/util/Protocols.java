@@ -16,7 +16,7 @@ public interface Protocols {
      * Format: "CONNECT"_"USR"
      * Informs the server that the client wants to get connected to the server
      */
-    public static final String WELCOME = "WELCOME";
+    public static final String CONNECT = "CONNECT";
 
     /**
      * From: server
