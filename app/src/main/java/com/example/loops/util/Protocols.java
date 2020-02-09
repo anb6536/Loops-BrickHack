@@ -29,27 +29,47 @@ public interface Protocols {
     /**
      * From: client
      * To: Server
-     * Format: "SEND"_"USR"_"MSG"
+     * Format: "SEND"_"USR"_"LOOP_ID"_"MSG" (username of the user to whom this message is being sent)
      * Requests the server to send the message
      */
     public static String SEND = "SEND";
 
     /**
+     * From: Server
+     * To: Client
+     * Format:
+     * Server sends through the
+     */
+    public static String CONTACTS="CONTACTS";
+    /**
      * From : server
      * To : client
-     * Format: "RECIEVE"_"MSG"
+     * Format: "RECIEVE"_"MSG" ( username of the user who is
      * Notifies the client that he/she received a new loop
      */
     public static String RECEIVE = "RECEIVE";
 
     /**
+     * from: Server
+     * to: Client
+     * Format: "MAX"
+     * notifies the user that the daily loop creation limit has been reached
+     */
+    public static String MAX_LOOP="MAX";
+    /**
      * From: server
      * To: client
-     * Format: "LOOPCOMP"_"VAL"_"USR"
+     * Format: "LOOPCOMP"_"VAL"
      * Notifies the clients that the loop is complete
      */
     public static String LOOP_COMPLETE = "LOOP_COMPLETE";
 
+    /**
+     * from: server
+     * to: client
+     * format
+     */
+    public static String LOOP_BROKEN="LOOP_BROKEN";
     /**
      * From: client
      * To: Server
